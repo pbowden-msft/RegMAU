@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 #set -x
 
 TOOL_NAME="Microsoft Office 365/2019/2016 Register AutoUpdate"
-TOOL_VERSION="1.1"
+TOOL_VERSION="1.2"
 
 ## Copyright (c) 2018 Microsoft Corp. All rights reserved.
 ## Scripts are not supported under any Microsoft standard support program or service. The scripts are provided AS IS without warranty of any kind.
@@ -13,6 +13,9 @@ TOOL_VERSION="1.1"
 ## loss) arising out of the use of or inability to use the sample scripts or documentation, even if Microsoft has been advised of the possibility
 ## of such damages.
 ## Feedback: pbowden@microsoft.com
+
+# Get the logged in user's user name - thanks to Erik Burglund - http://erikberglund.github.io/2018/Get-the-currently-logged-in-user,-in-Bash/
+loggedInUser=$(scutil <<< "show State:/Users/ConsoleUser" | awk -F': ' '/[[:space:]]+Name[[:space:]]:/ { if ( $2 != "loginwindow" ) { print $2 }} ')
 
 function ShowUsage {
 # Shows tool usage and parameters
@@ -28,7 +31,6 @@ function ShowUsage {
 if [[ $# = 0 ]]; then
 	ShowUsage
 elif [ "$1" == "/" ]; then
-		JAMF=true
 		Register=true
 else
 	for KEY in "$@"
@@ -51,15 +53,12 @@ else
 fi
 
 ## Main
-if [ $JAMF ]; then 
-	$USER="$3"
-fi
 if [ $Register ]; then
 	if [ -d "/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app" ]; then
-		/usr/bin/sudo -u $USER /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -R -f -trusted "/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app"
-		/usr/bin/sudo -u $USER /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -R -f -trusted "/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app/Contents/MacOS/Microsoft AU Daemon.app"
-		/usr/bin/sudo -u $USER defaults write com.microsoft.autoupdate2 StartDaemonOnAppLaunch -bool YES
-		echo "Microsoft AutoUpdate registered successfully"
+		/usr/bin/sudo -u $loggedInUser /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -R -f -trusted "/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app"
+		/usr/bin/sudo -u $loggedInUser /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -R -f -trusted "/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app/Contents/MacOS/Microsoft AU Daemon.app"
+		/usr/bin/sudo -u $loggedInUser defaults write com.microsoft.autoupdate2 StartDaemonOnAppLaunch -bool YES
+		echo "Microsoft AutoUpdate registered successfully for user: ${loggedInUser}"
 		echo
 	fi
 	else
