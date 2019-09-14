@@ -2,7 +2,7 @@
 #set -x
 
 TOOL_NAME="Microsoft Office 365/2019/2016 Register AutoUpdate"
-TOOL_VERSION="1.2"
+TOOL_VERSION="1.3"
 
 ## Copyright (c) 2018 Microsoft Corp. All rights reserved.
 ## Scripts are not supported under any Microsoft standard support program or service. The scripts are provided AS IS without warranty of any kind.
@@ -56,7 +56,7 @@ fi
 if [ $Register ]; then
 	if [ -d "/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app" ]; then
 		/usr/bin/sudo -u $loggedInUser /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -R -f -trusted "/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app"
-		/usr/bin/sudo -u $loggedInUser /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -R -f -trusted "/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app/Contents/MacOS/Microsoft AU Daemon.app"
+		/usr/bin/sudo -u $loggedInUser /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -R -f -trusted "/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app/Contents/MacOS/Microsoft Update Assistant.app"
 		/usr/bin/sudo -u $loggedInUser defaults write com.microsoft.autoupdate2 StartDaemonOnAppLaunch -bool YES
 		echo "Microsoft AutoUpdate registered successfully for user: ${loggedInUser}"
 		echo
